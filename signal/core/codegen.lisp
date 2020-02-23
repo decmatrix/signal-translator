@@ -2,4 +2,5 @@
     (:use :cl
           :alexandria))
 
-(in-package :signal/code/codegen)
+(in-package :signal/core/codegen)
+
