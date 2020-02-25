@@ -1,5 +1,7 @@
 (uiop:define-package :signal/core/parser
     (:use :cl
-          :alexandria))
+          :alexandria)
+  (:nicknames :signal/parser
+              :sig-parser))
 
 (in-package :signal/core/parser)
