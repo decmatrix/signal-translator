@@ -10,8 +10,12 @@ LINK super8, 8;
 OUT 2;
 
 
-(*
+?
 
-dowdwodwdjwodwdjowdwj
-*)
+
+(*
+    dowdwodwdjwodwdjowdwj
+
+
 END
+*)
