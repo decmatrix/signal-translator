@@ -1,11 +1,10 @@
-(uiop:define-package :signal/core/lexer
+(uiop:define-package :signal/core/lexer/lexer-back
     (:use :cl
           :alexandria
           :anaphora)
-  (:nicknames :signal/lexer
-              :sig-lexer)
+  (:nicknames :signal/lexer-back
+              :sig-lexer-back)
   (:export #:lexer
-           #:tokens-to-list
            ;; symbols
            #:PROGRAM
            #:BEGIN
@@ -17,36 +16,44 @@
            #:OUT
            #:SEMICOLON
            #:COMMA
-           #:COLON))
+           #:COLON
+           ;; token struct
+           #:token
+           #:token-y-pos
+           #:token-x-pos
+           #:token-type
+           #:token-val))
 
-(in-package :signal/core/lexer)
+(in-package :signal/core/lexer/lexer-back)
 
 (defstruct token
   "structure of token
-`type' - type of token: keyword, id, num etc.
-`val' - value of token
-`y-pos' - number line in file
-`x-pos' - number column in file"  
+----------------------------------------------
+Fileds:
+  `type' - type of token: keyword, id, num etc.
+  `val' - value of token
+  `y-pos' - number line in file
+  `x-pos' - number column in file"  
   type
   val
   y-pos
   x-pos)
 
-(defun lexer (input-file &key to-string with-errors without-res)
+(defun lexer (input-file &key with-errors)
   "generate tokens from file `.sig' and return
 list of this tokens
 ----------------------------------------------
 Args:
   `input-file' - input file with programs `.sig'
-  &key `to-string' - output list of tokens"
+  &key `with-errors' - save errors as part of result lexer for tests"
   (let ((x 1) ;; x pos in file
         (y 1) ;; y pos in file
         (id-table (make-hash-table :test #'eq))
-        error-reason res buff x-fix y-fix)
+        errors res buff x-fix y-fix)
     (labels ((%analysis ()
                (with-open-file (stream input-file)
                  (do ((ch (read-char stream) (read-char stream nil 'eof)))
-                     ((or (eq ch 'eof) error-reason))
+                     ((eq ch 'eof))
                    (setq x-fix x)
                    (setq y-fix y)
                    (cond
@@ -70,11 +77,11 @@ Args:
                       (setq res (append res
                                         (list (%read-digits-string stream)))))
                      ((not (white-char-p ch))
-                      (setq error-reason
-                            (list 'ERR
-                                  (format nil
-                                          "Lexer: Error (line ~S, column ~S): Illegal symbol '~S'"
-                                          y x ch)))))
+                      (setq errors
+                            (append errors
+                                    (list (format nil
+                                                  "Lexer: Error (line ~S, column ~S): Illegal symbol '~c'"
+                                                  y x ch))))))
                    (if (eq ch #\Newline)
                        (progn
                          (setq x 1)
@@ -121,27 +128,25 @@ Args:
                           (and (eq ch #\*)
                                (eq (peek-char nil stream) #\))
                                (progn (read-char stream)
-                                      (incf x)
+                                      (setq x (+ x 2))
                                       (setq end-of-comment t)))))
                    (if (eq ch #\Newline)
                        (progn (setq x 1)
                               (incf y))
                        (incf x)))
                  (unless end-of-comment
-                   (setq  error-reason
-                          (list' 'ERR
-                                 (format nil "Lexer: Error (line ~S, column ~S): not closed comment"
-                                         y-fix x-fix)))))))
+                   (setq  errors
+                          (append errors
+                                  (list
+                                   (format nil "Lexer: Error (line ~S, column ~S): not closed comment"
+                                           y-fix x-fix))))))))
       (%analysis)
-      (let ((result (if error-reason
-                        (if with-errors
-                            (list id-table res error-reason)
-                            (error "~S~%" error-reason))
-                        (list id-table res))))
-        (when to-string
-          (format-out-tokens result))
-        (unless without-res
-            result)))))
+      (if errors
+          (if with-errors
+              (list id-table res errors)
+              (error "~S~%" (car errors)))
+          (list id-table res)))))
+
 
 (defun keyword-p (word)
   (or (and (equal word "PROGRAM") 'PROGRAM)
@@ -156,7 +161,8 @@ Args:
 (defun delimeter-p (ch)
   (or (and (eq ch #\;) (list 'DELIMETER 'SEMICOLON))
       (and (eq ch #\,) (list 'DELIMETER 'COMMA))
-      (and (eq ch #\:) (list 'DELIMETER 'COLON))))
+      (and (eq ch #\:) (list 'DELIMETER 'COLON))
+      (and (eq ch #\.) (list 'DELIMETER 'DOT))))
 
 (defun white-char-p (ch)
   (or (eq ch #\space)
@@ -166,22 +172,5 @@ Args:
       (eq ch #\Return)
       (eq ch #\Linefeed)
       (eq ch #\Page)))
-
-(defun format-out-tokens (tokens &key (stream t))
-  (format stream "TOKENS: ~%")
-  (mapc (lambda (token)
-          (format stream "Type: ~S, val: ~S, line: ~S, column: ~S~%~%"
-                  (token-type token)
-                  (token-val token)
-                  (token-y-pos token)
-                  (token-x-pos token)))
-        (second tokens))
-  (aif (third tokens)
-       (format stream "~%~S~%~%" (second it)))
-  (format stream "IDENTIFERS: ")
-  (maphash-keys (lambda (id)
-                  (format stream "~S " id))
-                (first tokens))
-  (format stream "~%~%~%"))
 
 

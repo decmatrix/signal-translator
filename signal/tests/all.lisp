@@ -1,15 +1,17 @@
 (uiop:define-package :signal/tests/all
     (:use :cl
-          :lisp-unit
           :signal/tests/lexer
           :signal/tests/parser
-          :signal/tests/codegen)
+          ;:signal/tests/codegen
+          )
+  (:nicknames :signal/tests
+              :sig-tests)
   (:shadow)
   (:export #:test-suite))
 
 (in-package :signal/tests/all)
 
 (defun test-suite ()
-  (print 1))
+  (signal/tests/lexer:test-suite))
 
 

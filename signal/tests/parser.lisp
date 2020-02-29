@@ -1,8 +1,9 @@
 (uiop:define-package :signal/tests/parser
     (:use :cl
-          :lisp-unit))
+          :lisp-unit)
+  (:nicknames :signal/parser-tests
+              :sig-parser-tests))
 
 (in-package :signal/tests/parser)
 
-(defun test-suite ()
-  (print 1))
+(defun test-suite ())
