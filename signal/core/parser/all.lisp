@@ -2,5 +2,6 @@
     (:use :cl
           :signal/core/parser/parser-back
           :signal/core/parser/parser-front)
-  (:nicknames :signal/parser
-              :sig-parser))
+  (:export #:parser
+           #:format-out-tree
+           #:res-parser-get-error))

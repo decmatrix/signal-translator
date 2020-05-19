@@ -1,9 +1,10 @@
 (uiop:define-package :signal/tests/lexer
-    (:use :cl)
+    (:use :cl
+          :signal/tests/utils)
   (:nicknames :signal/lexer-tests
               :sig-lexer-tests)
   (:import-from :signal/core/all
-                #:format-out-tokens
+                #:upload-result-to-file
                 #:lexer)
   (:export #:test-suite))
 
@@ -16,34 +17,42 @@
 
 (defun run-true-tests ()
   (run-test
-   "true test 1"
-   "~/dev/lisp/signal-translator/signal/example-files/true-files/test1-true.sig")
+   "true lexer test 1"
+   "example-files/for-lexer/true-files/test1-true.sig"
+   "example-files/for-lexer/true-files/test1-true-result.txt")
   (run-test
-   "true test 2"
-   "~/dev/lisp/signal-translator/signal/example-files/true-files/test2-true.sig")
+   "true lexer test 2"
+   "example-files/for-lexer/true-files/test2-true.sig"
+   "example-files/for-lexer/true-files/test2-true-result.txt")
   (run-test
-   "true test 3"
-   "~/dev/lisp/signal-translator/signal/example-files/true-files/test3-true.sig")
+   "true lexer test 3"
+   "example-files/for-lexer/true-files/test3-true.sig"
+   "example-files/for-lexer/true-files/test3-true-result.txt")
   (format t "~%~%~%"))
 
 (defun run-false-tests ()
   (run-test
-   "false test 1"
-   "~/dev/lisp/signal-translator/signal/example-files/false-files/test1-false.sig")
+   "false lexer test 1"
+   "example-files/for-lexer/false-files/test1-false.sig"
+   "example-files/for-lexer/false-files/test1-false-result.txt")
   (run-test
-   "false test 2"
-   "~/dev/lisp/signal-translator/signal/example-files/false-files/test2-false.sig")
+   "false lexer test 2"
+   "example-files/for-lexer/false-files/test2-false.sig"
+   "example-files/for-lexer/false-files/test2-false-result.txt")
   (run-test
-   "false test 3"
-   "~/dev/lisp/signal-translator/signal/example-files/false-files/test3-false.sig")
+   "false lexer test 3"
+   "example-files/for-lexer/false-files/test3-false.sig"
+   "example-files/for-lexer/false-files/test3-false-result.txt" )
   (format t "~%~%~%"))
 
 
+(defun process-file (file output-file)
+  (upload-result-to-file (lexer (get-path-to-file file)
+                                :with-errors t)
+                         :long-out t
+                         :path-to-file (get-path-to-file output-file)))
 
-(defun process-file (file)
-  (format-out-tokens (lexer file :with-errors t)))
-
-(defun run-test (name file)
+(defun run-test (name file output-file)
   (format t "Run ~S test, file: ~S~%" name file)
-  (process-file file)
+  (process-file file output-file)
   (format t "~%~%"))

@@ -1,0 +1,26 @@
+.i386
+
+
+.data
+VAR_A DW 0h
+VAR_MOV DW 0h
+
+
+.code
+@TEST2TRUE:
+XOR AX, AX
+XOR VAR_A, VAR_A
+XOR DX, DX
+MOV DX, FDE8h
+MOV AX, VAR_A
+OUT DX, AX
+XOR AX, AX
+XOR VAR_MOV, VAR_MOV
+IN AX, 1h
+MOV VAR_MOV, AX
+
+
+MOV AX, 4c00h
+INT 21h
+
+;;OK. No errors

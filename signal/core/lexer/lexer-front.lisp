@@ -9,12 +9,12 @@
 
 (in-package :signal/core/lexer/lexer-front)
 
-(defun format-out-tokens (tokens &key (stream t) long-out)
+(defun format-out-tokens (result-lexer &key (stream t) long-out)
   "output information about every token from
 list - result of lexer
 ---------------------------------------------
 Args:
-  `tokens' - list of tokens (result of lexer)
+  `result-lexer' - instance of `res-lexer' class, list of tokens + errors (result of lexer)
   &key `stream' - stream output information
   &key `long-out' - output full-text information"
   (format stream "TOKENS: ~%")
@@ -26,14 +26,23 @@ Args:
                   (token-x-pos token)
                   (token-type token)
                   (token-val token)))
-        (second tokens))
-  (aif (third tokens)
+        (res-lexer-get-tokens result-lexer))
+  (aif (res-lexer-get-errors result-lexer)
        (mapc (lambda (elm)
                (format stream "~%~S" elm))
              it)
        (format stream "~%OK. No errors"))
-  (format stream "~%~%IDENTIFERS: ")
-  (maphash-keys (lambda (id)
-                  (format stream "~S " id))
-                (first tokens))
   (format stream "~%~%~%"))
+
+(defmethod upload-result-to-file ((result res-lexer) &key (path-to-file (concatenate
+                                                                         'string
+                                                                         (string (gensym "signal-lexer-res-gen"))
+                                                                         ".txt")) ;; TODO: change to siglexer
+                                                       long-out)
+  (with-open-file (stream path-to-file
+                          :direction :output
+                          :if-does-not-exist :create
+                          :if-exists :overwrite)
+    (format-out-tokens result
+                       :stream stream
+                       :long-out long-out)))

@@ -3,5 +3,7 @@
           :signal/core/lexer/lexer-back
           :signal/core/lexer/lexer-front)
   (:export #:lexer
-           #:format-out-tokens))
+           #:format-out-tokens
+           #:upload-result-to-file
+           #:res-lexer-get-errors))
 

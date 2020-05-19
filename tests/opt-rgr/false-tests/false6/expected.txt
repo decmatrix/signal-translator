@@ -1,0 +1,10 @@
+<SIGNAL-PROGRAM>
+...<PROGRAM>
+......<EMPTY>
+
+
+Parser: Error (line 1, column 1): Keyword 'PROGRAM' expected but 'AA' found
+
+
+
+

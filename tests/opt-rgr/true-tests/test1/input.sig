@@ -1,0 +1,16 @@
+PROGRAM TEST1TRUE;
+LABEL 1, 2, 3, 4, 5;
+
+BEGIN
+
+Goto 5;
+
+1: 
+OUT 2;
+LINK B, 2;
+
+2:
+IN 65000;
+LINK A, 65000;
+
+END.

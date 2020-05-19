@@ -1,0 +1,14 @@
+<SIGNAL-PROGRAM>
+...<PROGRAM>
+......<KEYWORD>
+.........PROGRAM
+......<PROCEDURE-IDENTIFIER>
+.........<IDENTIFIER>
+............TEST4FALSE
+
+
+Parser: Error: Delimeter ';' expected but end of file found
+
+
+
+

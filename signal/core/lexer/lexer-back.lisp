@@ -1,6 +1,5 @@
 (uiop:define-package :signal/core/lexer/lexer-back
     (:use :cl
-          :alexandria
           :anaphora)
   (:nicknames :signal/lexer-back
               :sig-lexer-back)
@@ -17,19 +16,41 @@
            #:SEMICOLON
            #:COMMA
            #:COLON
+           #:DOT
+           #:KEY-WORD
+           #:IDENTIFIER
+           #:UNSIGNED-INTEGER
+           #:DELIMETER
            ;; token struct
            #:token
            #:token-y-pos
            #:token-x-pos
            #:token-type
-           #:token-val))
+           #:token-val
+           ;; res-lexer class
+           #:res-lexer
+           #:res-lexer-get-tokens
+           #:res-lexer-get-errors))
 
 (in-package :signal/core/lexer/lexer-back)
+
+(defclass res-lexer ()
+  ((tokens
+     :initarg :init-tokens
+     :initform nil
+     :accessor res-lexer-get-tokens
+     :documentation "List of tokens.")
+   (errors
+    :initarg :init-errors
+    :initform nil
+    :accessor res-lexer-get-errors
+    :documentation "List of errors."))
+  (:documentation "Class represent result of lexer."))
 
 (defstruct token
   "structure of token
 ----------------------------------------------
-Fileds:
+Fields:
   `type' - type of token: keyword, id, num etc.
   `val' - value of token
   `y-pos' - number line in file
@@ -48,7 +69,6 @@ Args:
   &key `with-errors' - save errors as part of result lexer for tests"
   (let ((x 1) ;; x pos in file
         (y 1) ;; y pos in file
-        (id-table (make-hash-table :test #'eq))
         errors res buff x-fix y-fix)
     (labels ((%analysis ()
                (with-open-file (stream input-file)
@@ -71,7 +91,7 @@ Args:
                      ((alpha-char-p ch)
                       (setq buff (list ch))
                       (setq res (append res
-                                        (list (%read-identifier stream id-table)))))
+                                        (list (%read-identifier stream)))))
                      ((digit-char-p ch)
                       (setq buff (list ch))
                       (setq res (append res
@@ -87,7 +107,7 @@ Args:
                          (setq x 1)
                          (incf y))
                        (incf x)))))
-             (%read-identifier (stream id-table)
+             (%read-identifier (stream)
                (do ((ch (read-char stream) (read-char stream nil 'eof)))
                    ((or (eq ch 'eof)
                         (not (alphanumericp ch)))
@@ -102,9 +122,8 @@ Args:
                      :y-pos y-fix
                      :x-pos x-fix)
                     (let ((id (intern buff)))
-                      (setf (gethash id id-table) nil)
                       (make-token
-                       :type 'IDENTIIFER
+                       :type 'IDENTIFIER
                        :val id
                        :y-pos y-fix
                        :x-pos x-fix))))
@@ -143,9 +162,12 @@ Args:
       (%analysis)
       (if errors
           (if with-errors
-              (list id-table res errors)
+              (make-instance 'res-lexer
+               :init-tokens res
+               :init-errors errors)
               (error "~S~%" (car errors)))
-          (list id-table res)))))
+          (make-instance 'res-lexer
+                         :init-tokens res)))))
 
 
 (defun keyword-p (word)
@@ -172,5 +194,3 @@ Args:
       (eq ch #\Return)
       (eq ch #\Linefeed)
       (eq ch #\Page)))
-
-
