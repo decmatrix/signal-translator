@@ -7,9 +7,9 @@ Translator for language family - Signal
 ![signal grammar](https://github.com/bohdan-sokolovskyi/Signal-translator/blob/master/demo-pics/signal-grammar.png)
 
 ## Demonstration
-* Input:
+* Input:  
 ![demo in](https://github.com/bohdan-sokolovskyi/Signal-translator/blob/master/demo-pics/demo-in.jpg)  
 
 
-* Output:
+* Output:  
 ![demo out](https://github.com/bohdan-sokolovskyi/Signal-translator/blob/master/demo-pics/demo-out.jpg)
