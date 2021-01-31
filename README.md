@@ -8,7 +8,7 @@ Translator for language family - Signal
 
 ## Demonstration
 * Input:
-![demo in](https://github.com/bohdan-sokolovskyi/Signal-translator/blob/master/demo-pics/demo-in.jpg)
+![demo in](https://github.com/bohdan-sokolovskyi/Signal-translator/blob/master/demo-pics/demo-in.jpg)<br />
 
 
 * Output:
