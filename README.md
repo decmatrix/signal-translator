@@ -10,5 +10,6 @@ Translator for language family - Signal
 * Input:
 ![demo in](https://github.com/bohdan-sokolovskyi/Signal-translator/blob/master/demo-pics/demo-in.jpg)
 
+
 * Output:
 ![demo out](https://github.com/bohdan-sokolovskyi/Signal-translator/blob/master/demo-pics/demo-out.jpg)
